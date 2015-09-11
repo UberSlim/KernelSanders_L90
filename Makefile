@@ -347,13 +347,10 @@ CHECK		= sparse
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-CFLAGS_MODULE   = -DMODULE -fno-pic \
-                  -marm -mfpu=neon-vfpv4 \
-                  -mvectorize-with-neon-quad -munaligned-access
+CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	= -mtune=cortex-a7 \
-                  -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad -munaligned-access
+CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
@@ -371,8 +368,13 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-			 -Wdeclaration-after-statement \
+		   -Wdeclaration-after-statement \
+		   -Wno-maybe-uninitialized \
 		   -fno-delete-null-pointer-checks
+
+# ROM-Jeremy's Optimizations
+KBUILD_CFLAGS	+= -s -pipe -fno-pic -O2 -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=softfp -mfpu=vfpv4
+
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
