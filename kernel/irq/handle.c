@@ -139,7 +139,7 @@ irqreturn_t
 handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 {
 	irqreturn_t retval = IRQ_NONE;
-	unsigned int flags = 0, irq = desc->irq_data.irq;
+	unsigned int random = 0, irq = desc->irq_data.irq;
 
 #ifdef CONFIG_LGE_WAKE_IRQ_PRINT
 	if (!(action->flags & IRQF_DISABLED))
@@ -177,7 +177,7 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 
 			/* Fall through to add to randomness */
 		case IRQ_HANDLED:
-			flags |= action->flags;
+			random |= action->flags;
 			break;
 
 		default:
@@ -188,7 +188,8 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 		action = action->next;
 	} while (action);
 
-	add_interrupt_randomness(irq, flags);
+	if (random & IRQF_SAMPLE_RANDOM)
+		add_interrupt_randomness(irq);
 
 	if (!noirqdebug)
 		note_interrupt(irq, desc, retval);
